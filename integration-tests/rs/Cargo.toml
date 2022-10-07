@@ -17,6 +17,7 @@ tracing-subscriber = { version = "0.3.11", features = ["env-filter"] }
 workspaces = "0.2.1"
 pkg-config = "0.3.1"
 
+
 [[example]]
 name = "integration-tests"
 path = "src/tests.rs"

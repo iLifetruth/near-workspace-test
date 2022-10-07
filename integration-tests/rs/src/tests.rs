@@ -38,19 +38,41 @@ async fn main() -> anyhow::Result<()> {
     println!("{:?} {:?}",contract_0.id(),contract_a.id());
     println!("{:?} {:?}",contract_1.id(),contract_b.id());
 
-    let user = owner
-        .create_subaccount(&worker, "user")
+    let user_a = owner
+        .create_subaccount(&worker, "alice")
         .initial_balance(parse_near!("30 N"))
         .transact()
         .await?
         .into_result()?;
 
+    let user_b = owner
+        .create_subaccount(&worker, "bob")
+        .initial_balance(parse_near!("30 N"))
+        .transact()
+        .await?
+        .into_result()?;
+    // Test Native
+    test_token_transfer(&user_a, &user_b, &worker).await?;
+
     // begin tests  
-    test_set_message(&owner, &user, &contract_a, &worker).await?;
-    test_null_messages(&owner, &user, &contract_b, &worker).await?;
-    test_differing_statuses(&owner, &user, &contract_a, &worker).await?;
+    test_set_message(&owner, &user_a, &contract_a, &worker).await?;
+    test_null_messages(&owner, &user_a, &contract_b, &worker).await?;
+    test_differing_statuses(&owner, &user_a, &contract_a, &worker).await?;
     Ok(())
 }   
+
+async fn test_token_transfer(
+    user_a: &Account,
+    user_b: &Account,
+    worker: &Worker<Sandbox>,
+) -> anyhow::Result<()> {
+    println!("before sending: user_a balance = {}",user_a.view_account(&worker).await?.balance);
+    println!("before sending: user_b balance = {}",user_b.view_account(&worker).await?.balance);
+    user_a.transfer_near(&worker, &user_b.id(), parse_near!("10 N")).await?;
+    println!("user_a balance = {}",user_a.view_account(&worker).await?.balance);
+    println!("user_b balance = {}",user_b.view_account(&worker).await?.balance);
+    Ok(())
+}
 
 async fn test_set_message(
     owner: &Account,
