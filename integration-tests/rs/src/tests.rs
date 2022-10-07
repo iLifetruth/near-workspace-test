@@ -1,6 +1,6 @@
 use serde_json::json;
 use near_units::parse_near;
-use workspaces::prelude::*; 
+// use workspaces::prelude::*; 
 use workspaces::{network::Sandbox, Account, Contract, Worker};
 
 const WASM_FILEPATH: &str = "../../res/status_message.wasm";
